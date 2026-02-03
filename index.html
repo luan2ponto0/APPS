@@ -1,0 +1,96 @@
+<script>
+    const gameContainer = document.getElementById('game-container');
+    const scoreBoard = document.getElementById('score-board');
+    const startScreen = document.getElementById('start-screen');
+    const endScreen = document.getElementById('end-screen');
+    const backgroundMusic = document.getElementById('background-music');
+    
+    // Tenta pré-carregar a música assim que possível
+    backgroundMusic.preload = 'auto';
+
+    const totalHearts = 10;
+    let score = 0;
+
+    function startGame() {
+        // Tenta tocar a música. O .catch() evita que o jogo quebre se a música for bloqueada.
+        const promise = backgroundMusic.play();
+        if (promise !== undefined) {
+            promise.catch(error => {
+                console.error("A reprodução de áudio falhou:", error);
+                // O jogo continua normalmente mesmo se a música não tocar.
+            });
+        }
+        
+        startScreen.style.display = 'none';
+        scoreBoard.style.display = 'block';
+        score = 0;
+        updateScore();
+        generateHearts(totalHearts);
+    }
+
+    function restartGame() {
+        endScreen.style.display = 'none';
+        const remainingHearts = document.querySelectorAll('.heart-container');
+        remainingHearts.forEach(heart => heart.remove());
+        startGame();
+    }
+
+    function updateScore() {
+        scoreBoard.textContent = `Corações: ${score} / ${totalHearts}`;
+    }
+
+    function generateHearts(count) {
+        for (let i = 0; i < count; i++) {
+            createHeart();
+        }
+    }
+
+    function createHeart() {
+        const heartContainer = document.createElement('div');
+        heartContainer.classList.add('heart-container');
+
+        const heartIcon = document.createElement('div');
+        heartIcon.classList.add('heart-icon');
+
+        const heartText = document.createElement('div');
+        heartText.classList.add('heart-text');
+        heartText.textContent = 'Eu te amo';
+
+        heartContainer.appendChild(heartIcon);
+        heartContainer.appendChild(heartText);
+
+        const gameRect = gameContainer.getBoundingClientRect();
+        const heartSize = 70;
+        
+        let top, left;
+        do {
+            top = Math.random() * (gameRect.height - heartSize - 80) + 80;
+            left = Math.random() * (gameRect.width - heartSize);
+        } while (top < 80);
+
+        heartContainer.style.top = `${top}px`;
+        heartContainer.style.left = `${left}px`;
+        heartContainer.style.animationDelay = `${Math.random() * 3}s`;
+
+        heartContainer.addEventListener('click', () => {
+            collectHeart(heartContainer);
+        });
+
+        gameContainer.appendChild(heartContainer);
+    }
+
+    function collectHeart(heart) {
+        heart.remove();
+        score++;
+        updateScore();
+
+        if (score >= totalHearts) {
+            backgroundMusic.pause();
+            backgroundMusic.currentTime = 0;
+            setTimeout(() => {
+                endScreen.style.display = 'flex';
+                scoreBoard.style.display = 'none';
+            }, 500);
+        }
+    }
+</script>
