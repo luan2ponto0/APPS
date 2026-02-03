@@ -1,96 +1,248 @@
-<script>
-    const gameContainer = document.getElementById('game-container');
-    const scoreBoard = document.getElementById('score-board');
-    const startScreen = document.getElementById('start-screen');
-    const endScreen = document.getElementById('end-screen');
-    const backgroundMusic = document.getElementById('background-music');
-    
-    // Tenta pré-carregar a música assim que possível
-    backgroundMusic.preload = 'auto';
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Uma Missão para Evelin</title>
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e2e;
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 600px;
+            max-height: 900px;
+            background-color: #282a36;
+            border: 4px solid #44475a;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .heart-container {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        .heart-container:hover {
+            transform: scale(1.1);
+        }
+        .heart-icon {
+            width: 50px;
+            height: 50px;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff5555"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' );
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .heart-text {
+            font-size: 10px;
+            color: #f8f8f2;
+            text-shadow: 1px 1px #000;
+            margin-top: 5px;
+            user-select: none;
+        }
+        #score-board {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #50fa7b;
+            text-shadow: 2px 2px #000;
+            z-index: 10;
+        }
+        #start-screen, #end-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(20, 20, 30, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+        h1 {
+            color: #ff79c6;
+            text-shadow: 3px 3px #000;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 90%;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        button {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 18px;
+            padding: 15px 30px;
+            background-color: #bd93f9;
+            color: #f8f8f2;
+            border: 3px solid #44475a;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            text-shadow: 2px 2px #000;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff79c6;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap' );
+    </style>
+</head>
+<body>
 
-    const totalHearts = 10;
-    let score = 0;
+    <div id="game-container">
+        <!-- Tela Inicial -->
+        <div id="start-screen">
+            <h1>Para Evelin ❤️</h1>
+            <p>Meu amor, preparei uma pequena missão para você. Sua tarefa é encontrar e coletar 10 corações que escondi por aqui.</p>
+            <p>Clique em "Começar" para iniciar sua aventura!</p>
+            <button onclick="startGame()">Começar</button>
+        </div>
 
-    function startGame() {
-        // Tenta tocar a música. O .catch() evita que o jogo quebre se a música for bloqueada.
-        const promise = backgroundMusic.play();
-        if (promise !== undefined) {
-            promise.catch(error => {
-                console.error("A reprodução de áudio falhou:", error);
-                // O jogo continua normalmente mesmo se a música não tocar.
+        <!-- Tela Final (Declaração) -->
+        <div id="end-screen" style="display: none;">
+            <h1>Missão Cumprida!</h1>
+            <p>Meu mozin,</p>
+            <p>Me desculpa por todas as vezes que pareço chato. Não é de propósito e, principalmente, nunca é por falta de amor. É só a minha dificuldade em lidar com tudo ao mesmo tempo.</p>
+            <p>Esses 10 "Eu te amo" que você encontrou são poucos perto de tudo o que você merece. Sei que nossa situação atual não é fácil, mas eu admiro tanto a mãe incrível que você é, e tenho certeza de que tudo vai melhorar.</p>
+            <p>O meu amor por você é maior do que simples toques na tela podem explicar, do que uma boca pode falar ou um ouvido pode ouvir.</p>
+            <p style="margin-top: 20px;">Com todo o meu amor,  
+<strong>Rodrigo</strong></p>
+            <button onclick="restartGame()">Jogar de Novo</button>
+        </div>
+
+        <!-- Placar -->
+        <div id="score-board" style="display: none;">Corações: 0 / 10</div>
+        
+        <!-- Elemento de Áudio com a música da Taylor Swift -->
+        <audio id="background-music" loop preload="auto">
+            <source src="https://ia800905.us.archive.org/19/items/LoverPiano/Lover-Piano.mp3" type="audio/mpeg">
+            Seu navegador não suporta o elemento de áudio.
+        </audio>
+
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('game-container' );
+        const scoreBoard = document.getElementById('score-board');
+        const startScreen = document.getElementById('start-screen');
+        const endScreen = document.getElementById('end-screen');
+        const backgroundMusic = document.getElementById('background-music');
+        
+        const totalHearts = 10;
+        let score = 0;
+
+        function startGame() {
+            const promise = backgroundMusic.play();
+            if (promise !== undefined) {
+                promise.catch(error => {
+                    console.error("A reprodução de áudio falhou:", error);
+                });
+            }
+            
+            startScreen.style.display = 'none';
+            scoreBoard.style.display = 'block';
+            score = 0;
+            updateScore();
+            generateHearts(totalHearts);
+        }
+
+        function restartGame() {
+            endScreen.style.display = 'none';
+            const remainingHearts = document.querySelectorAll('.heart-container');
+            remainingHearts.forEach(heart => heart.remove());
+            startGame();
+        }
+
+        function updateScore() {
+            scoreBoard.textContent = `Corações: ${score} / ${totalHearts}`;
+        }
+
+        function generateHearts(count) {
+            for (let i = 0; i < count; i++) {
+                createHeart();
+            }
+        }
+
+        function createHeart() {
+            const heartContainer = document.createElement('div');
+            heartContainer.classList.add('heart-container');
+
+            const heartIcon = document.createElement('div');
+            heartIcon.classList.add('heart-icon');
+
+            const heartText = document.createElement('div');
+            heartText.classList.add('heart-text');
+            heartText.textContent = 'Eu te amo';
+
+            heartContainer.appendChild(heartIcon);
+            heartContainer.appendChild(heartText);
+
+            const gameRect = gameContainer.getBoundingClientRect();
+            const heartSize = 70;
+            
+            let top, left;
+            do {
+                top = Math.random() * (gameRect.height - heartSize - 80) + 80;
+                left = Math.random() * (gameRect.width - heartSize);
+            } while (top < 80);
+
+            heartContainer.style.top = `${top}px`;
+            heartContainer.style.left = `${left}px`;
+            heartContainer.style.animationDelay = `${Math.random() * 3}s`;
+
+            heartContainer.addEventListener('click', () => {
+                collectHeart(heartContainer);
             });
+
+            gameContainer.appendChild(heartContainer);
         }
-        
-        startScreen.style.display = 'none';
-        scoreBoard.style.display = 'block';
-        score = 0;
-        updateScore();
-        generateHearts(totalHearts);
-    }
 
-    function restartGame() {
-        endScreen.style.display = 'none';
-        const remainingHearts = document.querySelectorAll('.heart-container');
-        remainingHearts.forEach(heart => heart.remove());
-        startGame();
-    }
+        function collectHeart(heart) {
+            heart.remove();
+            score++;
+            updateScore();
 
-    function updateScore() {
-        scoreBoard.textContent = `Corações: ${score} / ${totalHearts}`;
-    }
-
-    function generateHearts(count) {
-        for (let i = 0; i < count; i++) {
-            createHeart();
+            if (score >= totalHearts) {
+                backgroundMusic.pause();
+                backgroundMusic.currentTime = 0;
+                setTimeout(() => {
+                    endScreen.style.display = 'flex';
+                    scoreBoard.style.display = 'none';
+                }, 500);
+            }
         }
-    }
+    </script>
 
-    function createHeart() {
-        const heartContainer = document.createElement('div');
-        heartContainer.classList.add('heart-container');
-
-        const heartIcon = document.createElement('div');
-        heartIcon.classList.add('heart-icon');
-
-        const heartText = document.createElement('div');
-        heartText.classList.add('heart-text');
-        heartText.textContent = 'Eu te amo';
-
-        heartContainer.appendChild(heartIcon);
-        heartContainer.appendChild(heartText);
-
-        const gameRect = gameContainer.getBoundingClientRect();
-        const heartSize = 70;
-        
-        let top, left;
-        do {
-            top = Math.random() * (gameRect.height - heartSize - 80) + 80;
-            left = Math.random() * (gameRect.width - heartSize);
-        } while (top < 80);
-
-        heartContainer.style.top = `${top}px`;
-        heartContainer.style.left = `${left}px`;
-        heartContainer.style.animationDelay = `${Math.random() * 3}s`;
-
-        heartContainer.addEventListener('click', () => {
-            collectHeart(heartContainer);
-        });
-
-        gameContainer.appendChild(heartContainer);
-    }
-
-    function collectHeart(heart) {
-        heart.remove();
-        score++;
-        updateScore();
-
-        if (score >= totalHearts) {
-            backgroundMusic.pause();
-            backgroundMusic.currentTime = 0;
-            setTimeout(() => {
-                endScreen.style.display = 'flex';
-                scoreBoard.style.display = 'none';
-            }, 500);
-        }
-    }
-</script>
+</body>
+</html>
