@@ -163,12 +163,14 @@
         let score = 0;
 
         function startGame() {
+            // Tenta tocar a música primeiro, pois precisa de interação do usuário
+            backgroundMusic.play().catch(e => console.log("A reprodução automática foi bloqueada, mas o jogo continua."));
+            
             startScreen.style.display = 'none';
             scoreBoard.style.display = 'block';
             score = 0;
             updateScore();
             generateHearts(totalHearts);
-            backgroundMusic.play().catch(e => console.log("A reprodução automática foi bloqueada. O usuário precisa interagir."));
         }
 
         function restartGame() {
@@ -222,7 +224,7 @@
             gameContainer.appendChild(heartContainer);
         }
 
-        function collectHeart(heart) {.
+        function collectHeart(heart) {
             heart.remove();
             score++;
             updateScore();
