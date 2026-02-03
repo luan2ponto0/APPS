@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Uma Missão para Evelin</title>
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive; /* Fonte estilo pixel art */
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e2e; /* Fundo escuro azulado */
+            color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            text-align: center;
+        }
+        #game-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 600px; /* Limita a largura em telas maiores */
+            max-height: 900px;
+            background-color: #282a36;
+            border: 4px solid #44475a;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        .heart {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ff5555"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' );
+            background-size: contain;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            animation: float 3s ease-in-out infinite;
+        }
+        .heart:hover {
+            transform: scale(1.2);
+        }
+        #score-board {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #50fa7b; /* Verde-limão */
+            text-shadow: 2px 2px #000;
+            z-index: 10;
+        }
+        #start-screen, #end-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(20, 20, 30, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+        h1 {
+            color: #ff79c6; /* Rosa */
+            text-shadow: 3px 3px #000;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 90%;
+        }
+        button {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 18px;
+            padding: 15px 30px;
+            background-color: #bd93f9; /* Roxo claro */
+            color: #f8f8f2;
+            border: 3px solid #44475a;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 30px;
+            text-shadow: 2px 2px #000;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #ff79c6; /* Rosa no hover */
+        }
+        /* Animação de flutuação para os corações */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        /* Importa a fonte do Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap' );
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Tela Inicial -->
+        <div id="start-screen">
+            <h1>Para Evelin ❤️</h1>
+            <p>Meu amor, preparei uma pequena missão para você. Sua tarefa é encontrar e coletar 10 corações que escondi por aqui.</p>
+            <p>Clique em "Começar" para iniciar sua aventura!</p>
+            <button onclick="startGame()">Começar</button>
+        </div>
+
+        <!-- Tela Final (Declaração) -->
+        <div id="end-screen" style="display: none;">
+            <h1>Missão Cumprida!</h1>
+            <p>Evelin,</p>
+            <p>Se eu pudesse, te daria todos os corações do universo, não só esses 10. Cada um deles representa um pouco do meu amor, carinho e admiração por você.</p>
+            <p>Me desculpa por todas as vezes que sou chato, teimoso ou complicado. Às vezes, na minha cabeça de nerd, eu me perco em códigos e lógicas e esqueço do que realmente importa: nós.</p>
+            <p>Você é o meu bug favorito, a minha feature mais incrível, o código que eu nunca quero terminar de decifrar. Obrigado por ser a melhor parte do meu dia.</p>
+            <p>Eu te amo mais do que palavras (ou um joguinho bobo) podem expressar.</p>
+            <p style="margin-top: 20px;">Com todo o meu amor,  
+<strong>Seu nome aqui</strong></p>
+            <button onclick="restartGame()">Jogar de Novo</button>
+        </div>
+
+        <!-- Placar -->
+        <div id="score-board" style="display: none;">Corações: 0 / 10</div>
+
+        <!-- O jogo acontece aqui -->
+    </div>
+
+    <script>
+        const gameContainer = document.getElementById('game-container');
+        const scoreBoard = document.getElementById('score-board');
+        const startScreen = document.getElementById('start-screen');
+        const endScreen = document.getElementById('end-screen');
+        
+        const totalHearts = 10;
+        let score = 0;
+
+        function startGame() {
+            startScreen.style.display = 'none';
+            scoreBoard.style.display = 'block';
+            score = 0;
+            updateScore();
+            generateHearts(totalHearts);
+        }
+
+        function restartGame() {
+            endScreen.style.display = 'none';
+            // Remove corações restantes
+            const remainingHearts = document.querySelectorAll('.heart');
+            remainingHearts.forEach(heart => heart.remove());
+            startGame();
+        }
+
+        function updateScore() {
+            scoreBoard.textContent = `Corações: ${score} / ${totalHearts}`;
+        }
+
+        function generateHearts(count) {
+            for (let i = 0; i < count; i++) {
+                createHeart();
+            }
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+
+            // Evita que o coração apareça sobre o placar
+            const gameRect = gameContainer.getBoundingClientRect();
+            const heartSize = 40;
+            
+            let top, left;
+            do {
+                top = Math.random() * (gameRect.height - heartSize - 80) + 80; // Não nasce muito no topo
+                left = Math.random() * (gameRect.width - heartSize);
+            } while (top < 80); // Garante que não sobreponha o placar
+
+            heart.style.top = `${top}px`;
+            heart.style.left = `${left}px`;
+            
+            // Adiciona um delay aleatório na animação para não flutuarem em sincronia
+            heart.style.animationDelay = `${Math.random() * 3}s`;
+
+            heart.addEventListener('click', () => {
+                collectHeart(heart);
+            });
+
+            gameContainer.appendChild(heart);
+        }
+
+        function collectHeart(heart) {
+            heart.remove();
+            score++;
+            updateScore();
+
+            if (score >= totalHearts) {
+                // Fim de jogo
+                setTimeout(() => {
+                    endScreen.style.display = 'flex';
+                    scoreBoard.style.display = 'none';
+                }, 500); // Pequeno delay para mostrar o placar final
+            }
+        }
+    </script>
+
+</body>
+</html>
